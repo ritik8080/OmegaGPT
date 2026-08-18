@@ -12,7 +12,7 @@ const AuthScreen = () => {
 
     const { login } = useContext(AuthContext);
     
-    const API_URL = 'http://localhost:8080/api/auth';
+    const API_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -98,13 +98,13 @@ const AuthScreen = () => {
                 </div>
 
                 <div className="oauth-buttons">
-                    <button className="oauth-btn" onClick={() => window.location.href = 'http://localhost:8080/api/auth/google'} title="Continue with Google">
+                    <button className="oauth-btn" onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`} title="Continue with Google">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" width="24" height="24" />
                     </button>
-                    <button className="oauth-btn" onClick={() => window.location.href = 'http://localhost:8080/api/auth/github'} title="Continue with GitHub">
+                    <button className="oauth-btn" onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/github`} title="Continue with GitHub">
                         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" width="24" height="24" />
                     </button>
-                    <button className="oauth-btn" onClick={() => window.location.href = 'http://localhost:8080/api/auth/linkedin'} title="Continue with LinkedIn">
+                    <button className="oauth-btn" onClick={() => window.location.href = window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/linkedin`} title="Continue with LinkedIn">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="24" height="24" />
                     </button>
                 </div>

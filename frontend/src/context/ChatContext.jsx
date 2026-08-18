@@ -4,7 +4,7 @@ import { AuthContext } from './AuthContext';
 
 export const ChatContext = createContext();
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 export const ChatProvider = ({ children }) => {
     const [threads, setThreads] = useState([]);
