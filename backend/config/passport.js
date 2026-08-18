@@ -49,7 +49,7 @@ passport.use(new GoogleStrategy({
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID || 'dummy_id',
     clientSecret: process.env.GITHUB_CLIENT_SECRET || 'dummy_secret',
-    callbackURL: '/api/auth/github/callback'
+    callbackURL: `${process.env.BACKEND_URL || 'http://localhost:8080'}/api/auth/github/callback`
 }, async (accessToken, refreshToken, profile, done) => {
     try {
         const user = await findOrCreateUser(profile, 'githubId');
