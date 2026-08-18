@@ -4,27 +4,42 @@ import passport from 'passport';
 import User from '../models/User.js';
 import { protect } from '../middleware/authMiddleware.js';
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
-
 const router = express.Router();
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET || 'omegagpt_secret', {
-        expiresIn: '30d',
-    });
+    return jwt.sign(
+        { id },
+        process.env.JWT_SECRET || 'omegagpt_secret',
+        {
+            expiresIn: '30d',
+        }
+    );
 };
 
+// ==========================================
 // Register user
+// ==========================================
 router.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        const userExists = await User.findOne({ $or: [{ email }, { username }] });
+        const userExists = await User.findOne({
+            $or: [{ email }, { username }]
+        });
+
         if (userExists) {
-            return res.status(400).json({ error: 'User already exists' });
+            return res.status(400).json({
+                error: 'User already exists'
+            });
         }
 
-        const user = await User.create({ username, email, password });
+        const user = await User.create({
+            username,
+            email,
+            password
+        });
 
         if (user) {
             res.status(201).json({
@@ -34,14 +49,22 @@ router.post('/register', async (req, res) => {
                 token: generateToken(user._id)
             });
         } else {
-            res.status(400).json({ error: 'Invalid user data' });
+            res.status(400).json({
+                error: 'Invalid user data'
+            });
         }
     } catch (error) {
-        res.status(500).json({ error: 'Server error during registration' });
+        console.error('Registration error:', error);
+
+        res.status(500).json({
+            error: 'Server error during registration'
+        });
     }
 });
 
+// ==========================================
 // Login user
+// ==========================================
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -56,33 +79,108 @@ router.post('/login', async (req, res) => {
                 token: generateToken(user._id)
             });
         } else {
-            res.status(401).json({ error: 'Invalid email or password' });
+            res.status(401).json({
+                error: 'Invalid email or password'
+            });
         }
     } catch (error) {
-        res.status(500).json({ error: 'Server error during login' });
+        console.error('Login error:', error);
+
+        res.status(500).json({
+            error: 'Server error during login'
+        });
     }
 });
 
-// Get user profile (Protected)
+// ==========================================
+// Get user profile
+// ==========================================
 router.get('/profile', protect, async (req, res) => {
     res.json(req.user);
 });
 
-// OAuth Routes
-router.get('/google/callback', passport.authenticate('google', { session: false, failureRedirect: FRONTEND_URL }), (req, res) => {
-    const token = generateToken(req.user);
-    res.redirect(`${FRONTEND_URL}/?token=${token}`);
-});
+// ==========================================
+// GOOGLE OAUTH
+// ==========================================
 
-router.get('/linkedin/callback', passport.authenticate('linkedin', { session: false, failureRedirect: FRONTEND_URL }), (req, res) => {
-    const token = generateToken(req.user);
-    res.redirect(`${FRONTEND_URL}/?token=${token}`);
-});
+// Start Google OAuth
+router.get(
+    '/google',
+    passport.authenticate('google', {
+        scope: ['profile', 'email']
+    })
+);
 
-router.get('/linkedin', passport.authenticate('linkedin', { state: true }));
-router.get('/linkedin/callback', passport.authenticate('linkedin', { session: false, failureRedirect: 'http://localhost:5173/' }), (req, res) => {
-    const token = generateToken(req.user._id);
-    res.redirect(`http://localhost:5173/?token=${token}`);
-});
+// Google OAuth callback
+router.get(
+    '/google/callback',
+    passport.authenticate('google', {
+        session: false,
+        failureRedirect: FRONTEND_URL
+    }),
+    (req, res) => {
+        const token = generateToken(req.user._id);
+
+        res.redirect(
+            `${FRONTEND_URL}/?token=${token}`
+        );
+    }
+);
+
+// ==========================================
+// GITHUB OAUTH
+// ==========================================
+
+// Start GitHub OAuth
+router.get(
+    '/github',
+    passport.authenticate('github', {
+        scope: ['user:email']
+    })
+);
+
+// GitHub OAuth callback
+router.get(
+    '/github/callback',
+    passport.authenticate('github', {
+        session: false,
+        failureRedirect: FRONTEND_URL
+    }),
+    (req, res) => {
+        const token = generateToken(req.user._id);
+
+        res.redirect(
+            `${FRONTEND_URL}/?token=${token}`
+        );
+    }
+);
+
+// ==========================================
+// LINKEDIN OAUTH
+// ==========================================
+
+// Start LinkedIn OAuth
+router.get(
+    '/linkedin',
+    passport.authenticate('linkedin', {
+        state: true
+    })
+);
+
+// LinkedIn OAuth callback
+router.get(
+    '/linkedin/callback',
+    passport.authenticate('linkedin', {
+        session: false,
+        failureRedirect: FRONTEND_URL
+    }),
+    (req, res) => {
+        const token = generateToken(req.user._id);
+
+        res.redirect(
+            `${FRONTEND_URL}/?token=${token}`
+        );
+    }
+);
 
 export default router;
