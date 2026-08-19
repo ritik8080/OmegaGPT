@@ -12,8 +12,20 @@ export const ChatProvider = ({ children }) => {
     const [messages, setMessages] = useState([]);
     const [systemPrompt, setSystemPrompt] = useState('You are a helpful and intelligent assistant.');
     const [loading, setLoading] = useState(false);
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
     const [threadsLoaded, setThreadsLoaded] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth > 768) {
+                setSidebarOpen(true);
+            } else {
+                setSidebarOpen(false);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
     
     const { token } = useContext(AuthContext);
 

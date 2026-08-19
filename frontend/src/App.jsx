@@ -6,7 +6,7 @@ import { ChatContext } from './context/ChatContext';
 import { AuthContext } from './context/AuthContext';
 
 function App() {
-  const { createNewChat, threads, threadsLoaded, selectThread, currentThreadId } = useContext(ChatContext);
+  const { createNewChat, threads, threadsLoaded, selectThread, currentThreadId, sidebarOpen, setSidebarOpen } = useContext(ChatContext);
   const { user, login } = useContext(AuthContext);
 
   useEffect(() => {
@@ -35,6 +35,7 @@ function App() {
 
   return (
     <div className="app-container">
+      {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)}></div>}
       <Sidebar />
       <ChatWindow />
     </div>

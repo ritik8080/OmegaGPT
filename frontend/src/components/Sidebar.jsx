@@ -16,7 +16,10 @@ const Sidebar = () => {
             </div>
             
             <div className="sidebar-header">
-                <button className="new-chat-btn" onClick={createNewChat}>
+                <button className="new-chat-btn" onClick={() => {
+                    createNewChat();
+                    if (window.innerWidth <= 768) setSidebarOpen(false);
+                }}>
                     <PlusCircle size={20} />
                     <span>New Chat</span>
                 </button>
@@ -30,7 +33,10 @@ const Sidebar = () => {
                     <div 
                         key={thread.threadId} 
                         className={`thread-item ${currentThreadId === thread.threadId ? 'active' : ''}`}
-                        onClick={() => selectThread(thread.threadId)}
+                        onClick={() => {
+                            selectThread(thread.threadId);
+                            if (window.innerWidth <= 768) setSidebarOpen(false);
+                        }}
                     >
                         <MessageSquare size={18} className="thread-icon" />
                         <span className="thread-title">{thread.title || 'New Chat'}</span>
